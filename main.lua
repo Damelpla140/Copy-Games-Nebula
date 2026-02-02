@@ -265,7 +265,7 @@ local function CreateiOSGUI()
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = ScreenGui
     MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
-    MainFrame.BackgroundTransparency = 0.3  -- Transparencia estilo iOS
+    MainFrame.BackgroundTransparency = 0.25  -- Más visible
     MainFrame.BorderSizePixel = 0
     MainFrame.Position = UDim2.new(0.35, 0, 0.25, 0)
     MainFrame.Size = UDim2.new(0, 520, 0, 470)
@@ -273,24 +273,32 @@ local function CreateiOSGUI()
     MainFrame.Draggable = true
     MainFrame.ClipsDescendants = true
     
+    -- Animación de entrada
+    MainFrame.Size = UDim2.new(0, 0, 0, 0)
+    MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 520, 0, 470),
+        Position = UDim2.new(0.35, 0, 0.25, 0)
+    }):Play()
+    
     -- Corner para el MainFrame
     local MainCorner = Instance.new("UICorner")
     MainCorner.CornerRadius = UDim.new(0, 20)
     MainCorner.Parent = MainFrame
     
-    -- Borde estilo iOS
+    -- Borde estilo iOS más visible
     local Border = Instance.new("UIStroke")
     Border.Parent = MainFrame
     Border.Color = Color3.fromRGB(255, 255, 255)
-    Border.Transparency = 0.8
-    Border.Thickness = 1
+    Border.Transparency = 0.7
+    Border.Thickness = 1.5
     
-    -- Efecto de vidrio (Glassmorphism)
+    -- Efecto de vidrio mejorado (Glassmorphism)
     local GlassEffect = Instance.new("Frame")
     GlassEffect.Name = "GlassEffect"
     GlassEffect.Parent = MainFrame
     GlassEffect.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    GlassEffect.BackgroundTransparency = 0.95
+    GlassEffect.BackgroundTransparency = 0.92
     GlassEffect.BorderSizePixel = 0
     GlassEffect.Size = UDim2.new(1, 0, 1, 0)
     GlassEffect.ZIndex = 0
@@ -299,18 +307,30 @@ local function CreateiOSGUI()
     GlassCorner.CornerRadius = UDim.new(0, 20)
     GlassCorner.Parent = GlassEffect
     
-    -- Gradiente sutil
+    -- Gradiente mejorado
     local Gradient = Instance.new("UIGradient")
     Gradient.Parent = GlassEffect
     Gradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 255, 200))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 255, 150)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(50, 200, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 100, 255))
     }
     Gradient.Rotation = 45
     Gradient.Transparency = NumberSequence.new{
-        NumberSequenceKeypoint.new(0, 0.9),
-        NumberSequenceKeypoint.new(1, 0.95)
+        NumberSequenceKeypoint.new(0, 0.85),
+        NumberSequenceKeypoint.new(0.5, 0.9),
+        NumberSequenceKeypoint.new(1, 0.85)
     }
+    
+    -- Efecto de brillo animado
+    spawn(function()
+        while MainFrame.Parent do
+            TweenService:Create(Gradient, TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+                Rotation = Gradient.Rotation + 360
+            }):Play()
+            wait(3)
+        end
+    end)
     
     -- ═══════════════════════════════════════════════════════════════════════
     --                          TOP BAR (Barra Superior iOS)
@@ -320,7 +340,7 @@ local function CreateiOSGUI()
     TopBar.Name = "TopBar"
     TopBar.Parent = MainFrame
     TopBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TopBar.BackgroundTransparency = 0.9
+    TopBar.BackgroundTransparency = 0.88
     TopBar.BorderSizePixel = 0
     TopBar.Size = UDim2.new(1, 0, 0, 60)
     
@@ -328,16 +348,16 @@ local function CreateiOSGUI()
     TopBarCorner.CornerRadius = UDim.new(0, 20)
     TopBarCorner.Parent = TopBar
     
-    -- Borde inferior sutil
+    -- Borde inferior sutil mejorado
     local TopBarDivider = Instance.new("Frame")
     TopBarDivider.Parent = TopBar
     TopBarDivider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TopBarDivider.BackgroundTransparency = 0.9
+    TopBarDivider.BackgroundTransparency = 0.85
     TopBarDivider.BorderSizePixel = 0
     TopBarDivider.Position = UDim2.new(0, 15, 1, -1)
     TopBarDivider.Size = UDim2.new(1, -30, 0, 1)
     
-    -- Logo/Icono
+    -- Logo/Icono con animación
     local Logo = Instance.new("ImageLabel")
     Logo.Name = "Logo"
     Logo.Parent = TopBar
@@ -351,7 +371,17 @@ local function CreateiOSGUI()
     LogoCorner.CornerRadius = UDim.new(0, 8)
     LogoCorner.Parent = Logo
     
-    -- Título
+    -- Animación de rotación del logo
+    spawn(function()
+        while Logo.Parent do
+            TweenService:Create(Logo, TweenInfo.new(2, Enum.EasingStyle.Linear), {
+                Rotation = Logo.Rotation + 360
+            }):Play()
+            wait(2)
+        end
+    end)
+    
+    -- Título con gradiente
     local Title = Instance.new("TextLabel")
     Title.Name = "Title"
     Title.Parent = TopBar
@@ -363,6 +393,13 @@ local function CreateiOSGUI()
     Title.TextColor3 = Color3.fromRGB(255, 255, 255)
     Title.TextSize = 20
     Title.TextXAlignment = Enum.TextXAlignment.Left
+    
+    local TitleGradient = Instance.new("UIGradient")
+    TitleGradient.Parent = Title
+    TitleGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 255, 200)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 200, 255))
+    }
     
     local Subtitle = Instance.new("TextLabel")
     Subtitle.Name = "Subtitle"
@@ -377,7 +414,7 @@ local function CreateiOSGUI()
     Subtitle.TextXAlignment = Enum.TextXAlignment.Left
     Subtitle.TextTransparency = 0.3
     
-    -- Botones de Control iOS Style
+    -- Botones de Control iOS Style mejorados
     local CloseButton = Instance.new("TextButton")
     CloseButton.Name = "CloseButton"
     CloseButton.Parent = TopBar
@@ -393,15 +430,38 @@ local function CreateiOSGUI()
     CloseCorner.CornerRadius = UDim.new(1, 0)
     CloseCorner.Parent = CloseButton
     
-    local CloseIcon = Instance.new("ImageLabel")
+    local CloseStroke = Instance.new("UIStroke")
+    CloseStroke.Parent = CloseButton
+    CloseStroke.Color = Color3.fromRGB(200, 40, 30)
+    CloseStroke.Transparency = 0.5
+    CloseStroke.Thickness = 1
+    
+    -- X icon
+    local CloseIcon = Instance.new("TextLabel")
     CloseIcon.Parent = CloseButton
     CloseIcon.BackgroundTransparency = 1
-    CloseIcon.Position = UDim2.new(0.5, -5, 0.5, -5)
-    CloseIcon.Size = UDim2.new(0, 10, 0, 10)
-    CloseIcon.Image = "rbxassetid://3926305904"
-    CloseIcon.ImageRectOffset = Vector2.new(284, 4)
-    CloseIcon.ImageRectSize = Vector2.new(24, 24)
-    CloseIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    CloseIcon.Size = UDim2.new(1, 0, 1, 0)
+    CloseIcon.Font = Enum.Font.GothamBold
+    CloseIcon.Text = "×"
+    CloseIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseIcon.TextSize = 16
+    CloseIcon.TextTransparency = 1
+    
+    CloseButton.MouseEnter:Connect(function()
+        TweenService:Create(CloseIcon, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
+        TweenService:Create(CloseButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(255, 80, 70),
+            Size = UDim2.new(0, 22, 0, 22)
+        }):Play()
+    end)
+    
+    CloseButton.MouseLeave:Connect(function()
+        TweenService:Create(CloseIcon, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
+        TweenService:Create(CloseButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(255, 59, 48),
+            Size = UDim2.new(0, 20, 0, 20)
+        }):Play()
+    end)
     
     local MinimizeButton = Instance.new("TextButton")
     MinimizeButton.Name = "MinimizeButton"
@@ -417,6 +477,39 @@ local function CreateiOSGUI()
     local MinimizeCorner = Instance.new("UICorner")
     MinimizeCorner.CornerRadius = UDim.new(1, 0)
     MinimizeCorner.Parent = MinimizeButton
+    
+    local MinimizeStroke = Instance.new("UIStroke")
+    MinimizeStroke.Parent = MinimizeButton
+    MinimizeStroke.Color = Color3.fromRGB(200, 160, 0)
+    MinimizeStroke.Transparency = 0.5
+    MinimizeStroke.Thickness = 1
+    
+    -- Minimize icon
+    local MinimizeIcon = Instance.new("TextLabel")
+    MinimizeIcon.Parent = MinimizeButton
+    MinimizeIcon.BackgroundTransparency = 1
+    MinimizeIcon.Size = UDim2.new(1, 0, 1, 0)
+    MinimizeIcon.Font = Enum.Font.GothamBold
+    MinimizeIcon.Text = "−"
+    MinimizeIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MinimizeIcon.TextSize = 16
+    MinimizeIcon.TextTransparency = 1
+    
+    MinimizeButton.MouseEnter:Connect(function()
+        TweenService:Create(MinimizeIcon, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
+        TweenService:Create(MinimizeButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(255, 220, 50),
+            Size = UDim2.new(0, 22, 0, 22)
+        }):Play()
+    end)
+    
+    MinimizeButton.MouseLeave:Connect(function()
+        TweenService:Create(MinimizeIcon, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
+        TweenService:Create(MinimizeButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(255, 204, 0),
+            Size = UDim2.new(0, 20, 0, 20)
+        }):Play()
+    end)
     
     -- ═══════════════════════════════════════════════════════════════════════
     --                          SIDEBAR (Menú Lateral iOS)
@@ -589,29 +682,82 @@ local function CreateiOSGUI()
         IndicatorCorner.CornerRadius = UDim.new(1, 0)
         IndicatorCorner.Parent = ToggleIndicator
         
-        -- Sombra del indicador
+        -- Sombra del indicador mejorada
         local IndicatorShadow = Instance.new("UIStroke")
         IndicatorShadow.Parent = ToggleIndicator
         IndicatorShadow.Color = Color3.fromRGB(0, 0, 0)
-        IndicatorShadow.Transparency = 0.8
-        IndicatorShadow.Thickness = 1
+        IndicatorShadow.Transparency = 0.7
+        IndicatorShadow.Thickness = 2
         
         local toggled = false
+        
+        -- Hover effect
+        ToggleButton.MouseEnter:Connect(function()
+            if not toggled then
+                TweenService:Create(ToggleButton, TweenInfo.new(0.2), {
+                    BackgroundColor3 = Color3.fromRGB(140, 140, 148)
+                }):Play()
+            end
+        end)
+        
+        ToggleButton.MouseLeave:Connect(function()
+            if not toggled then
+                TweenService:Create(ToggleButton, TweenInfo.new(0.2), {
+                    BackgroundColor3 = Color3.fromRGB(120, 120, 128)
+                }):Play()
+            end
+        end)
         
         ToggleButton.MouseButton1Click:Connect(function()
             toggled = not toggled
             
             local indicatorPos = toggled and UDim2.new(1, -24, 0.5, -11) or UDim2.new(0, 2, 0.5, -11)
+            local indicatorSize = toggled and UDim2.new(0, 24, 0, 24) or UDim2.new(0, 22, 0, 22)
             local buttonColor = toggled and Color3.fromRGB(52, 199, 89) or Color3.fromRGB(120, 120, 128)
             
-            TweenService:Create(ToggleIndicator, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                Position = indicatorPos
+            -- Efecto de escala al hacer click
+            TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
+                Size = UDim2.new(0, 47, 0, 24)
+            }):Play()
+            
+            task.wait(0.1)
+            
+            TweenService:Create(ToggleButton, TweenInfo.new(0.1), {
+                Size = UDim2.new(0, 51, 0, 26)
+            }):Play()
+            
+            TweenService:Create(ToggleIndicator, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Position = indicatorPos,
+                Size = indicatorSize
             }):Play()
             
             TweenService:Create(ToggleButton, TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
                 BackgroundColor3 = buttonColor,
                 BackgroundTransparency = toggled and 0 or 0.2
             }):Play()
+            
+            -- Efecto de onda
+            local ripple = Instance.new("Frame")
+            ripple.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ripple.BackgroundTransparency = 0.5
+            ripple.BorderSizePixel = 0
+            ripple.Size = UDim2.new(0, 0, 0, 0)
+            ripple.Position = UDim2.new(0.5, 0, 0.5, 0)
+            ripple.Parent = ToggleButton
+            ripple.ZIndex = 10
+            
+            local rippleCorner = Instance.new("UICorner")
+            rippleCorner.CornerRadius = UDim.new(1, 0)
+            rippleCorner.Parent = ripple
+            
+            TweenService:Create(ripple, TweenInfo.new(0.5), {
+                Size = UDim2.new(2, 0, 2, 0),
+                Position = UDim2.new(-0.5, 0, -0.5, 0),
+                BackgroundTransparency = 1
+            }):Play()
+            
+            task.wait(0.5)
+            ripple:Destroy()
             
             if callback then
                 callback(toggled)
@@ -740,15 +886,26 @@ local function CreateiOSGUI()
         Button.TextColor3 = Color3.fromRGB(255, 255, 255)
         Button.TextSize = 15
         Button.AutoButtonColor = false
+        Button.ClipsDescendants = true
         
         local ButtonCorner = Instance.new("UICorner")
         ButtonCorner.CornerRadius = UDim.new(0, 12)
         ButtonCorner.Parent = Button
         
+        -- Stroke para más definición
+        local ButtonStroke = Instance.new("UIStroke")
+        ButtonStroke.Parent = Button
+        ButtonStroke.Color = Color3.fromRGB(255, 255, 255)
+        ButtonStroke.Transparency = 0.9
+        ButtonStroke.Thickness = 1
+        
         Button.MouseEnter:Connect(function()
             TweenService:Create(Button, TweenInfo.new(0.2), {
                 BackgroundTransparency = 0,
                 BackgroundColor3 = Color3.fromRGB(10, 132, 255)
+            }):Play()
+            TweenService:Create(Button, TweenInfo.new(0.2), {
+                Size = UDim2.new(1, 0, 0, 47)
             }):Play()
         end)
         
@@ -757,11 +914,39 @@ local function CreateiOSGUI()
                 BackgroundTransparency = 0.1,
                 BackgroundColor3 = Color3.fromRGB(0, 122, 255)
             }):Play()
+            TweenService:Create(Button, TweenInfo.new(0.2), {
+                Size = UDim2.new(1, 0, 0, 45)
+            }):Play()
         end)
         
-        if callback then
-            Button.MouseButton1Click:Connect(callback)
-        end
+        Button.MouseButton1Click:Connect(function()
+            -- Ripple effect
+            local ripple = Instance.new("Frame")
+            ripple.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ripple.BackgroundTransparency = 0.5
+            ripple.BorderSizePixel = 0
+            ripple.Size = UDim2.new(0, 0, 0, 0)
+            ripple.Position = UDim2.new(0.5, 0, 0.5, 0)
+            ripple.Parent = Button
+            ripple.ZIndex = 10
+            
+            local rippleCorner = Instance.new("UICorner")
+            rippleCorner.CornerRadius = UDim.new(1, 0)
+            rippleCorner.Parent = ripple
+            
+            TweenService:Create(ripple, TweenInfo.new(0.6), {
+                Size = UDim2.new(2, 0, 2, 0),
+                Position = UDim2.new(-0.5, 0, -0.5, 0),
+                BackgroundTransparency = 1
+            }):Play()
+            
+            task.wait(0.6)
+            ripple:Destroy()
+            
+            if callback then
+                callback()
+            end
+        end)
         
         return Button
     end
@@ -1214,6 +1399,10 @@ local function CreateiOSGUI()
         minimized = not minimized
         local targetSize = minimized and UDim2.new(0, 520, 0, 60) or UDim2.new(0, 520, 0, 470)
         TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = targetSize}):Play()
+        
+        -- Hide/Show content when minimizing
+        Sidebar.Visible = not minimized
+        ContentArea.Visible = not minimized
     end)
     
     -- ═══════════════════════════════════════════════════════════════════════
